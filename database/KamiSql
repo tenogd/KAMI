@@ -21,15 +21,15 @@ CREATE TABLE `empresa` (
         REFERENCES direccion (id_direccion)
 );
 
-CREATE TABLE `tipoEmpresa` (
+CREATE TABLE `tipo_empresa` (
     `id_tipo` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `tipo` VARCHAR(9) CHECK (tipo IN (`propia` , `cliente`, `proveedor`))
 );
 
-CREATE TABLE `empresaTipoEmpresa` (
+CREATE TABLE `empresa_tipo_empresa` (
     `id_tipo` INT,
     FOREIGN KEY (`id_tipo`)
-        REFERENCES `tipoEmpresa` (`id_tipo`),
+        REFERENCES `tipo_empresa` (`id_tipo`),
     `id_empresa` INT,
     FOREIGN KEY (`id_empresa`)
         REFERENCES `empresa` (`id_empresa`)
@@ -37,7 +37,7 @@ CREATE TABLE `empresaTipoEmpresa` (
 
 CREATE TABLE `email` (
     `id_email` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `email` VARCHAR(45),
+    `email` VARCHAR(45) UNIQUE,
     `id_empresa` INT,
     FOREIGN KEY (`id_empresa`)
         REFERENCES `empresa` (`id_empresa`)
@@ -45,7 +45,7 @@ CREATE TABLE `email` (
 
 CREATE TABLE `telefono` (
     `id_telefono` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `telefono` INT,
+    `telefono` INT UNIQUE,
     `id_empresa` INT,
     FOREIGN KEY (`id_empresa`)
         REFERENCES `empresa` (`id_empresa`)
@@ -53,8 +53,55 @@ CREATE TABLE `telefono` (
 
 CREATE TABLE `fax` (
     `id_fax` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `fax` INT,
+    `fax` INT UNIQUE,
     `id_empresa` INT,
     FOREIGN KEY (`id_empresa`)
         REFERENCES `empresa` (`id_empresa`)
 );
+
+CREATE TABLE `proyecto` (
+    `id_proyecto` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(45),
+    `fecha_inicio` DATE,
+    `fecha_fin` DATE,
+    `id_empresa` INT,
+    FOREIGN KEY (`id_empresa`)
+        REFERENCES `empresa` (`id_empresa`),
+    CHECK (`fecha_fin` >= `fecha_inicio`)
+);
+
+CREATE TABLE `pedido` (
+    `id_pedido` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `fecha_entrada` DATE,
+    `fecha_entrega` DATE,
+    `id_proyecto` INT,
+    FOREIGN KEY (`id_proyecto`)
+        REFERENCES `proyecto` (`id_proyecto`),
+    CHECK (`fecha_entrega` >= `fecha_entrada`)
+);
+
+CREATE TABLE `cantidad` (
+    `id_cantidad` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `cantidad` INT
+);
+
+CREATE TABLE `producto` (
+    `id_producto` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(45),
+    `descripcion` VARCHAR(150),
+    `costo` DOUBLE,
+    `pvp` DOUBLE
+);
+
+CREATE TABLE `pedido_cantidad_producto` (
+    `id_pedido` INT,
+    FOREIGN KEY (`id_pedido`)
+        REFERENCES `pedido` (`id_pedido`),
+    `id_cantidad` INT,
+    FOREIGN KEY (`id_cantidad`)
+        REFERENCES `cantidad` (`id_cantidad`),
+    `id_producto` INT,
+    FOREIGN KEY (`id_producto`)
+        REFERENCES `producto` (`id_producto`)
+);
+
