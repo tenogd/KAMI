@@ -23,7 +23,7 @@ CREATE TABLE `empresa` (
 
 CREATE TABLE `tipo_empresa` (
     `id_tipo` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `tipo` VARCHAR(9) CHECK (tipo IN (`propia` , `cliente`, `proveedor`))
+    `tipo` VARCHAR(9) UNIQUE CHECK (tipo IN (`propia` , `cliente`, `proveedor`))
 );
 
 CREATE TABLE `empresa_tipo_empresa` (
@@ -105,3 +105,92 @@ CREATE TABLE `pedido_cantidad_producto` (
         REFERENCES `producto` (`id_producto`)
 );
 
+CREATE TABLE `subproducto` (
+    `id_subproducto` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(45),
+    `descripcion` VARCHAR(150),
+    `costo` DOUBLE
+);
+
+CREATE TABLE `producto_subproducto` (
+    `id_producto` INT,
+    FOREIGN KEY (`id_producto`)
+        REFERENCES `producto` (`id_producto`),
+    `id_subproducto` INT,
+    FOREIGN KEY (`id_subproducto`)
+        REFERENCES `subproducto` (`id_subproducto`)
+);
+
+CREATE TABLE `pieza` (
+    `id_pieza` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(45),
+    `descripcion` VARCHAR(150),
+    `costo` DOUBLE
+);
+
+CREATE TABLE `producto_pieza` (
+    `id_producto` INT,
+    FOREIGN KEY (`id_producto`)
+        REFERENCES `producto` (`id_producto`),
+    `id_pieza` INT,
+    FOREIGN KEY (`id_pieza`)
+        REFERENCES `pieza` (`id_pieza`)
+);
+
+CREATE TABLE `subproducto_pieza` (
+    `id_subproducto` INT,
+    FOREIGN KEY (`id_subproducto`)
+        REFERENCES `subproducto` (`id_subproducto`),
+    `id_pieza` INT,
+    FOREIGN KEY (`id_pieza`)
+        REFERENCES `pieza` (`id_pieza`)
+);
+
+CREATE TABLE `material` (
+    `id_material` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(45),
+    `tipo` VARCHAR(45),
+    `formato` VARCHAR(45),
+    `acabado` VARCHAR(45)
+);
+
+CREATE TABLE `material_empresa` (
+    `id_material` INT,
+    FOREIGN KEY (`id_material`)
+        REFERENCES `material` (`id_material`),
+    `id_empresa` INT,
+    FOREIGN KEY (`id_empresa`)
+        REFERENCES `empresa` (`id_empresa`)
+);
+
+CREATE TABLE `material_pieza` (
+    `id_material` INT,
+    FOREIGN KEY (`id_material`)
+        REFERENCES `material` (`id_material`),
+    `id_pieza` INT,
+    FOREIGN KEY (`id_pieza`)
+        REFERENCES `pieza` (`id_pieza`)
+);
+
+CREATE TABLE `tarea` (
+    `id_tarea` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(45),
+    `descripcion` VARCHAR(150)
+);
+
+CREATE TABLE `operacion` (
+    `id_operacion` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(45),
+    `id_tarea` INT,
+    FOREIGN KEY (`id_tarea`)
+        REFERENCES `tarea` (`id_tarea`)
+);
+
+CREATE TABLE `pieza_operacion` (
+    `id_pieza` INT,
+    FOREIGN KEY (`id_pieza`)
+        REFERENCES `pieza` (`id_pieza`),
+    `id_operacion` INT,
+    FOREIGN KEY (`id_operacion`)
+        REFERENCES `operacion` (`id_operacion`)
+);
